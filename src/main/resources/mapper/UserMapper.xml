@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.xyj.learn.mapper.UserMapper">
+    <resultMap id="UserEntityMap" type="com.xyj.learn.entity.UserEntity">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="user_status" property="userStatus" jdbcType="BIT"/>
+        <result column="user_password" property="userPassword" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="BaseColumn">
+	id,
+	user_id,
+	user_name,
+	user_status,
+	user_password,
+	phone
+		</sql>
+
+
+    <!-- 插入 -->
+    <insert id="save" parameterType="com.xyj.learn.entity.UserEntity" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO t_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="userStatus != null">
+                user_status,
+            </if>
+            <if test="userPassword != null">
+                user_password,
+            </if>
+            <if test="phone != null">
+                phone
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userStatus != null">
+                #{userStatus,jdbcType=BIT},
+            </if>
+            <if test="userPassword != null">
+                #{userPassword,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 修改 -->
+    <update id="update" parameterType="com.xyj.learn.entity.UserEntity">
+        UPDATE t_user
+        <set>
+            <if test="userStatus != null">
+                user_status = #{userStatus},
+            </if>
+            <if test="userPassword != null">
+                user_password = #{userPassword},
+            </if>
+            <if test="phone != null">
+                phone = #{phone}
+            </if>
+        </set>
+        <where>
+            <if test="id!=null">
+                and id = #{id}
+            </if>
+            <if test="userId!=null">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </update>
+
+    <!-- 查询 -->
+    <select id="query" parameterType="com.xyj.learn.entity.UserEntity" resultMap="UserEntityMap">
+        SELECT
+        <include refid="BaseColumn"/>
+        FROM t_user
+        <where>
+            <if test="id!=null and id!=''">
+                and id = #{id}
+            </if>
+            <if test="userId!=null and userId!=''">
+                and user_id = #{userId}
+            </if>
+            <if test="userName!=null and userName!=''">
+                and user_name = #{userName}
+            </if>
+            <if test="userStatus!=null">
+                and user_status = #{userStatus}
+            </if>
+            <if test="userPassword!=null">
+                and user_password = #{userPassword}
+            </if>
+            <if test="phone!=null and phone!=''">
+                and phone = #{phone}
+            </if>
+        </where>
+    </select>
+
+    <select id="getUsers" resultMap="UserEntityMap">
+        SELECT
+        <include refid="BaseColumn"/>
+        FROM t_user
+        WHERE
+        user_id IN
+        <foreach collection="userIds" separator="," item="userId" open="(" close=")">
+            #{userId}
+        </foreach>
+</select>
+
+        </mapper>
